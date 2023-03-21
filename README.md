@@ -826,11 +826,23 @@ void handle_client(int new_socket){
 	exit(0);
 }
 ```
-Bằng cách tạo một tiến trình con (child process) để xử lý mỗi kết nối đến từ client.
+Hàm này sẽ chạy trong tiến trình con, nên khi tiến trình cha nhận được yêu cầu kết thúc từ client, tiến trình con vẫn có thể tiếp tục xử lý các yêu cầu từ client khác. 
 
 Khi có một kết nối đến từ client, server sẽ tạo một tiến trình con bằng cách sử dụng hàm `fork()`. Trong tiến trình con, server sẽ gọi hàm `handle_client()` để xử lý kết nối với client. Trong hàm `handle_client()`, server sẽ nhận dữ liệu từ client và tính toán tổng của hai số đã gửi. Server sẽ gửi lại kết quả cho client và tiếp tục chờ đợi dữ liệu mới từ client.
 
 Trong khi tiến trình con đang xử lý kết nối với client, tiến trình cha (parent process) vẫn có thể chấp nhận các kết nối mới đến từ các client khác. Mỗi khi có một kết nối mới đến từ client, server sẽ tạo thêm một tiến trình con để xử lý kết nối đó.
+
+**Hiển thị số client đang kết nối**
+
+Để hiển thị số lượng client đang kết nối đến server, bạn có thể sửa đổi mã nguồn của server như sau:
+
+- Khai báo một biến toàn cục để lưu trữ số lượng client đang kết nối.
+- Mỗi khi có một kết nối mới đến từ client, tăng giá trị của biến lên 1 và in ra màn hình.
+- Mỗi khi một kết nối bị ngắt hoặc kết thúc, giảm giá trị của biến xuống 1 và in ra màn hình.
+
+Khi một kết nối giữa client và server bị ngắt hoặc kết thúc, hàm `read()` sẽ trả về giá trị nhỏ hơn hoặc bằng 0. Điều này được kiểm tra trong vòng lặp while của hàm `handle_client()`. Khi điều kiện của vòng lặp không còn đúng (khi hàm `read()` trả về giá trị nhỏ hơn hoặc bằng 0), vòng lặp sẽ kết thúc.
+
+Sau khi thoát khỏi vòng lặp while, server sẽ đóng socket đã kết nối với client bằng cách gọi hàm `close()`. Sau đó, server sẽ giảm giá trị của biến `num_clients` xuống 1 và in ra màn hình thông báo có một client đã ngắt kết nối. Cuối cùng, tiến trình con sẽ kết thúc bằng cách gọi hàm exit().
 
 ### Điều này hoạt động như thế nào?
 
