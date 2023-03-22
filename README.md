@@ -1,5 +1,7 @@
 <h1>Nguyên lý hệ điều hành - Cuối kỳ </h1>
 
+![Profile views](https://gpvc.arturio.dev/kztera)
+
 <h2> Table of Contents </h2>
 
 - [Bài 1:](#bài-1)
@@ -10,7 +12,6 @@
   - [Code](#code-1)
     - [2.1. Server](#21-server)
     - [2.2. Client](#22-client)
-    - [2.3. Cho phép nhiều client có thể cùng giao tiếp với Server](#23-cho-phép-nhiều-client-có-thể-cùng-giao-tiếp-với-server)
   - [Giải thích](#giải-thích)
     - [2.1. Server](#21-server-1)
       - [2.1.1 Khai báo thư viện, định nghĩa cổng server](#211-khai-báo-thư-viện-định-nghĩa-cổng-server)
@@ -36,6 +37,14 @@
         - [2.3.2.1. Phía client](#2321-phía-client)
         - [2.3.2.2. Phía server](#2322-phía-server)
   - [Điều này hoạt động như thế nào?](#điều-này-hoạt-động-như-thế-nào)
+- [Bài 3: Lập lịch tiến trình](#bài-3-lập-lịch-tiến-trình)
+  - [Đề bài:](#đề-bài)
+  - [Bài làm: Thực hiện bằng code C trên Ubuntu](#bài-làm-thực-hiện-bằng-code-c-trên-ubuntu)
+    - [1. Thuật toán SJF có ưu tiên (Shortest Job First with Priority)](#1-thuật-toán-sjf-có-ưu-tiên-shortest-job-first-with-priority)
+    - [2. Cài đặt](#2-cài-đặt)
+    - [3. Giải thuật](#3-giải-thuật)
+    - [4. Code](#4-code)
+    - [3. Chạy chương trình](#3-chạy-chương-trình)
 
 ## Bài 1:
 
@@ -420,10 +429,6 @@ int main(int argc, char const* argv[])
 }
 ```
 
-#### 2.3. Cho phép nhiều client có thể cùng giao tiếp với Server
-
-// TODO: Chưa làm được
-
 ### Giải thích
 
 #### 2.1. Server
@@ -651,7 +656,7 @@ Sau đó, chương trình sẽ đọc dữ liệu từ máy chủ bằng hàm `r
 
 Chúng ta sẽ làm một số thay đổi nhỏ để tùy biến chương trình cho phù hợp. Ví dụ ở đây ta sẽ thiết lập server có khả năng nhận 2 số từ client và trả về kết quả phép tính cộng của 2 số đó.
 
-##### 2.3.1. Chỉ kết nối với 1 client 
+##### 2.3.1. Chỉ kết nối với 1 client
 
 **Phía client:**
 
@@ -687,7 +692,7 @@ int main(int argc, char const* argv[]) {
     sprintf(message, "%d %d", number1, number2);
 
     [. . . ] // Không thay đổi phần code khởi tạo socket và kết nối đến server
-    
+
     send(client_fd , message , strlen(message) , 0 );
 
 	valread = read( client_fd , buffer, 1024);
@@ -707,9 +712,9 @@ int main(int argc, char const* argv[]) {
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = { 0 };
-  
-    [. . .] // Không thay đổi phần code khởi tạo socket và thiết lập server để lắng nghe kết nối từ client 
-	
+
+    [. . .] // Không thay đổi phần code khởi tạo socket và thiết lập server để lắng nghe kết nối từ client
+
 	valread = read(new_socket , buffer, 1024);
 
 	int number1, number2;
@@ -733,12 +738,14 @@ int main(int argc, char const* argv[]) {
 Tuy nhiên như thì mỗi lần server sẽ chỉ nhận 1 kết nối của client cũng như nếu muốn tính lại tổng 2 số thì phải chạy lại chương trình client lẫn server. Để giải quyết vấn đề này, ta thay đổi chương trình theo hướng:
 
 **Phía Client:**
-- Thêm một vòng lặp để client có thể gửi nhiều lần thông điệp đến server.
-- Thoát khỏi vòng lặp khi nhập giá trị đặc biệt hoặc kết thúc chương trình bằng cách nhấn tổ hợp phím `Ctrl + C`.
+
+-  Thêm một vòng lặp để client có thể gửi nhiều lần thông điệp đến server.
+-  Thoát khỏi vòng lặp khi nhập giá trị đặc biệt hoặc kết thúc chương trình bằng cách nhấn tổ hợp phím `Ctrl + C`.
 
 **Phía Server:**
-- Thêm một vòng lặp while bao quanh đoạn code xử lý kết nối từ client. Trong vòng lặp này, server sẽ chấp nhận kết nối từ client mới và tạo một tiến trình con (child process) để xử lý kết nối này. Tiến trình con sẽ nhận 2 số từ client và tính tổng 2 số đó. Sau đó, tiến trình con sẽ gửi kết quả đến client và tiếp tục xử lý các yêu cầu từ client cho tới khi nhận được yêu cầu kết thúc.
-- Server chỉ kết thúc khi chủ động thoát chương trình bằng cách nhấn tổ hợp phím `Ctrl + C`.
+
+-  Thêm một vòng lặp while bao quanh đoạn code xử lý kết nối từ client. Trong vòng lặp này, server sẽ chấp nhận kết nối từ client mới và tạo một tiến trình con (child process) để xử lý kết nối này. Tiến trình con sẽ nhận 2 số từ client và tính tổng 2 số đó. Sau đó, tiến trình con sẽ gửi kết quả đến client và tiếp tục xử lý các yêu cầu từ client cho tới khi nhận được yêu cầu kết thúc.
+-  Server chỉ kết thúc khi chủ động thoát chương trình bằng cách nhấn tổ hợp phím `Ctrl + C`.
 
 ##### 2.3.2. Cho phép kết nối nhiều client
 
@@ -762,11 +769,11 @@ Tuy nhiên như thì mỗi lần server sẽ chỉ nhận 1 kết nối của cl
 		sprintf(message,"%d %d",number1,number2);
 
 		send(client_fd , message , strlen(message) , 0 );
-		
+
 		valread = read( client_fd , buffer, 1024);
 		printf("Sum: %s\n", buffer);
 	}
-	
+
 	close(client_fd);
 	return 0;
 ```
@@ -786,7 +793,7 @@ while(1){
             perror("accept");
             exit(EXIT_FAILURE);
         }
-        
+
         pid_t pid=fork();
         if(pid==0){
             close(server_fd);
@@ -804,9 +811,9 @@ Trong đó, hàm `handle_client`:
 void handle_client(int new_socket){
 	int valread;
 	char buffer[1024] = { 0 };
-	
+
 	while((valread=read(new_socket , buffer, 1024))>0){
-		
+
 		int number1,number2,sum;
 
         sscanf(buffer,"%d %d",&number1,&number2);
@@ -817,16 +824,17 @@ void handle_client(int new_socket){
 
         send(new_socket , message , strlen(message) , 0 );
         printf("Sum sent\n");
-		
+
 		memset(buffer,'\0',sizeof(buffer));
-		
+
 	}
-	
+
 	close(new_socket);
 	exit(0);
 }
 ```
-Hàm này sẽ chạy trong tiến trình con, nên khi tiến trình cha nhận được yêu cầu kết thúc từ client, tiến trình con vẫn có thể tiếp tục xử lý các yêu cầu từ client khác. 
+
+Hàm này sẽ chạy trong tiến trình con, nên khi tiến trình cha nhận được yêu cầu kết thúc từ client, tiến trình con vẫn có thể tiếp tục xử lý các yêu cầu từ client khác.
 
 Khi có một kết nối đến từ client, server sẽ tạo một tiến trình con bằng cách sử dụng hàm `fork()`. Trong tiến trình con, server sẽ gọi hàm `handle_client()` để xử lý kết nối với client. Trong hàm `handle_client()`, server sẽ nhận dữ liệu từ client và tính toán tổng của hai số đã gửi. Server sẽ gửi lại kết quả cho client và tiếp tục chờ đợi dữ liệu mới từ client.
 
@@ -836,9 +844,9 @@ Trong khi tiến trình con đang xử lý kết nối với client, tiến trì
 
 Để hiển thị số lượng client đang kết nối đến server, bạn có thể sửa đổi mã nguồn của server như sau:
 
-- Khai báo một biến toàn cục để lưu trữ số lượng client đang kết nối.
-- Mỗi khi có một kết nối mới đến từ client, tăng giá trị của biến lên 1 và in ra màn hình.
-- Mỗi khi một kết nối bị ngắt hoặc kết thúc, giảm giá trị của biến xuống 1 và in ra màn hình.
+-  Khai báo một biến toàn cục để lưu trữ số lượng client đang kết nối.
+-  Mỗi khi có một kết nối mới đến từ client, tăng giá trị của biến lên 1 và in ra màn hình.
+-  Mỗi khi một kết nối bị ngắt hoặc kết thúc, giảm giá trị của biến xuống 1 và in ra màn hình.
 
 Khi một kết nối giữa client và server bị ngắt hoặc kết thúc, hàm `read()` sẽ trả về giá trị nhỏ hơn hoặc bằng 0. Điều này được kiểm tra trong vòng lặp while của hàm `handle_client()`. Khi điều kiện của vòng lặp không còn đúng (khi hàm `read()` trả về giá trị nhỏ hơn hoặc bằng 0), vòng lặp sẽ kết thúc.
 
@@ -867,3 +875,253 @@ Bạn có thể hình dung server và client như hai người đang cố gắng
 Trong suốt cuộc trò chuyện, hai người có thể trao đổi thông tin qua lại bằng cách nói vào điện thoại. Khi muốn kết thúc cuộc trò chuyện, một trong hai người có thể thông báo cho người kia biết rằng họ muốn cúp máy. Sau khi hoàn thành việc trao đổi thông tin cuối cùng, hai người sẽ cùng cúp máy để kết thúc cuộc trò chuyện.
 
 Quá trình kết nối giữa server và client cũng tương tự như vậy. Server sẽ mở một socket để lắng nghe các yêu cầu kết nối từ client. Khi client muốn kết nối tới server, nó sẽ tạo một socket và yêu cầu kết nối tới socket của server. Khi server chấp nhận yêu cầu này, hai socket sẽ được kết nối với nhau và server và client có thể bắt đầu trao đổi dữ liệu qua lại.
+
+## Bài 3: Lập lịch tiến trình
+
+### Đề bài:
+
+Cho dãy tiến trình p1, p2, ... pn trong file `tientrinh.txt` trong đó có dòng đầu tiên ghi số tiến trình, các dòng tiếp theo mỗi dòng ghi tên tiến trình và thời gian thực thi của tiến trình theo thứ tự đến của tiến trình trong hàng đợi.
+**Yêu cầu:** Sử dụng thuật toán SJF có ưu tiên đưa ra danh sách thứ tự thực hiện của các tiến trình và thời gian chờ trung bình (average waiting time) của các tiến trình.
+
+### Bài làm: Thực hiện bằng code C trên Ubuntu
+
+#### 1. Thuật toán SJF có ưu tiên (Shortest Job First with Priority)
+
+Trước hết, thuật toán này là một thuật toán lập lịch tiến trình (scheduling algorithm) được sử dụng để lập lịch các tiến trình trong hệ điều hành. Thuật toán này sẽ lựa chọn tiến trình có thời gian thực thi ngắn nhất để thực thi trước. Nếu có nhiều tiến trình có thời gian thực thi bằng nhau, thì tiến trình nào đến trước sẽ được thực thi trước.
+
+Như vậy, thuật toán SJF có ưu tiên sẽ lựa chọn tiến trình có thời gian thực thi ngắn nhất và đến trước để thực thi trước. Với đầu vào là một danh sách các tiến trình đang chờ thực thi, thuật toán sẽ lặp lại các bước sau:
+
+-  Tìm tiến trình có thời gian thực thi ngắn nhất và đến trước trong danh sách các tiến trình chưa được thực thi.
+-  Thực thi tiến trình này.
+-  Xóa tiến trình này khỏi danh sách các tiến trình chưa được thực thi và thêm tiến trình này vào danh sách các tiến trình đã được thực thi.
+
+Thuật toán SJF đã được chứng minh là sẽ cho ra thời gian chờ trung bình cho các tiến trình cần xử lý với một số con tối thiểu nhất. Bằng cách chuyển cách tiến trình ngắn hơn lên trước các tiến trình tốn thời gian dài, nó đã giảm một cách đáng kể thời gian chờ cho các tiến trình ngắn, kéo theo giảm rõ rệt thời gian chờ trung bình.
+
+#### 2. Cài đặt
+
+Trước hết, ta có file `tientrinh.txt` với nội dung như sau:
+
+-  Dòng đầu ghi số tiến trình
+-  Các dòng tiếp theo mỗi dòng ghi tên tiến trình và thời gian thực thi của tiến trình theo thứ tự đến của tiến trình trong hàng đợi.
+
+Thời gian thực hiện của mỗi tiến trình phụ thuộc vào nhiều yếu tố khác nhau như loại tiến trình, tài nguyên máy tính có sẵn và các yêu cầu xử lý khác. Thời gian thực hiện của một tiến trình thường được tính bằng đơn vị thời gian như giây hoặc mili-giây. Trong ví dụ này, ta sẽ giả sử thời gian thực hiện của mỗi tiến trình là một số nguyên.
+
+```txt
+5
+p1 3
+p2 2
+p3 1
+p4 4
+p5 5
+```
+
+#### 3. Giải thuật
+
+Chuyển file `tientrinh.txt` thành bảng như sau
+
+| Tiến trình | Thời gian thực thi |
+| :--------: | :----------------: |
+|     p1     |         9          |
+|     p2     |         2          |
+|     p3     |         1          |
+|     p4     |         4          |
+|     p5     |         6          |
+
+Sử dụng thuật toán SJF ta sắp xếp lại thứ tự đến CPU như sau:
+
+$$CPU \leftarrow p3 \leftarrow p2 \leftarrow p4 \leftarrow p1 \leftarrow p5$$
+
+Bảng sau khi đã sắp xếp lại:
+
+| Tiến trình | Thời gian thực thi |
+| :--------: | :----------------: |
+|     p3     |         1          |
+|     p2     |         2          |
+|     p4     |         4          |
+|     p5     |         6          |
+|     p1     |         9          |
+
+Ta có bảng thời gian chờ của các tiến trình
+
+|        | p3  | p2  | p4  | p5  | p1  |
+| :----: | :-: | :-: | :-: | :-: | :-: |
+| **p3** |  -  |  1  |  1  |  1  |  1  |
+| **p2** |  -  |  -  |  2  |  2  |  2  |
+| **p4** |  -  |  -  |  -  |  4  |  4  |
+| **p5** |  -  |  -  |  -  |  -  |  6  |
+| **p1** |  -  |  -  |  -  |  -  |  -  |
+|Thời gian chờ|-|1|3|7|13|
+
+Thời gian chờ trung bình của các tiến trình là: $$\frac{1+3+7+13}{5} = 5.2$$
+
+#### 4. Code
+
+Để thực hiện bài toán, ta sẽ tạo một struct `Process` để lưu trữ thông tin của một tiến trình. Struct này có 3 trường: tên tiến trình, thời gian thực thi và thời gian đến của tiến trình.
+
+```c
+typedef struct {
+    char name[10];
+    int time;
+    int arrive;
+} Process;
+```
+
+Tiếp theo, ta sẽ tạo một struct `Queue` để lưu trữ danh sách các tiến trình. Struct này có 2 trường: mảng các tiến trình và số tiến trình trong danh sách.
+
+```c
+typedef struct {
+    Process *processes;
+    int size;
+} Queue;
+```
+
+Để đọc dữ liệu từ file `tientrinh.txt` và lưu vào danh sách các tiến trình, ta sẽ viết hàm `readProcess` như sau:
+
+```c
+Queue readProcess(char *filename) {
+    FILE *f = fopen(filename, "r");
+    Queue queue;
+    queue.size = 0;
+    queue.processes = (Process *) malloc(sizeof(Process));
+    int n;
+    fscanf(f, "%d", &n);
+    for (int i = 0; i < n; i++) {
+        Process p;
+        fscanf(f, "%s %d", p.name, &p.time);
+        p.arrive = i;
+        queue.processes[i] = p;
+        queue.size++;
+        queue.processes = (Process *) realloc(queue.processes, (queue.size + 1) * sizeof(Process));
+    }
+    fclose(f);
+    return queue;
+}
+```
+
+-  `queue.processes = (Process *) malloc(sizeof(Process));` là dòng khởi tạo mảng `queue.processes` với kích thước 1.
+
+-  `queue.processes = (Process *) realloc(queue.processes, (queue.size + 1) * sizeof(Process));` là dòng cấp phát thêm bộ nhớ cho mảng `queue.processes` khi cần thiết.
+
+Ở đây, sử dụng vòng lặp `for` chạy duyệt qua các tiến trình trong file `tientrinh.txt` và lưu vào danh sách các tiến trình. Mỗi lần như thế, ta sẽ tạo một `Process` mới và lưu vào mảng `queue.processes`. Sau đó, ta sẽ tăng `queue.size` lên 1 và cấp phát thêm bộ nhớ cho mảng `queue.processes` với kích thước `queue.size + 1`.
+
+Dựa vào phần giải thuật cùng yêu cầu đề bài, ta xây dựng hàm `waitingTime` như sau:
+
+```c
+void waitingTime(Queue queue) {
+    int time = 0;
+    int total = 0;
+    int *waiting = (int *) malloc(queue.size * sizeof(int));
+    for (int i = 0; i < queue.size; i++) {
+        waiting[i] = time - queue.processes[i].arrive;
+        time += queue.processes[i].time;
+        total += waiting[i];
+    }
+    printf("Thoi gian cho trung binh: %.2f\n", (float) total / queue.size);
+    printf("Thoi gian cho tung tien trinh:\n");
+    for (int i = 0; i < queue.size; i++) {
+        printf("%s: %d\n", queue.processes[i].name, waiting[i]);
+    }
+}
+```
+
+
+
+-  Hàm được truyền vào là danh sách các tiến trình đã được thêm vào Queue. (Hàng đợi các tiến trình chưa được thực thi)
+-  Biến `time` khởi tạo bằng 0, lưu trữ thời gian thực hiện của các tiến trình
+-  Biến `total` khởi tạo bằng 0, lưu trữ tổng thời gian chờ của các tiến trình
+-  Mảng `waiting` được cấp phát động với kích thước bằng với số tiến trình trong hàng đợi và dùng để lưu trữ thời gian chờ của từng tiến trình.
+
+Khi đã có danh sách các tiến trình, ta sẽ thực hiện thuật toán SJF có ưu tiên bằng cách sử dụng vòng lặp `While`. Và trong mỗi lần đó:
+
+-  Tìm ra chỉ số `min` của tiến trình có thời gian thực thi nhỏ nhất trong hàng đợi. (Vòng `for` đầu tiên)
+-  Tiếp đó, nếu có nhiều tiến trình có thời gian thực thi nhỏ nhất, ta sẽ tìm ra tiến trình có thời gian đến nhỏ nhất tức là có giá trị `arrive` nhỏ nhất. (Vòng `for` thứ 2)
+-  Khi đã có được chỉ số `min`, ta cập nhật giá trị biến `time` bằng cách cộng thời gian thực thi của tiến trình đó vào biến `time`.
+-  Đồng thời, cập nhật giá trị của phần tử tương ứng trong mảng `waiting` bằng cách lấy thời gian thực thi của tiến trình đó trừ đi thời gian đến của tiến trình đó. Lúc này ta được thời gian chờ của tiến trình đó.
+-  Tiếp đó, in ra tên tiến trình và thời gian thực thi của tiến trình đó và xóa tiến trình đó khỏi hàng đợi.
+-  Khi đã duyệt hết hàng đợi, tức là đã thực thi hết các tiến trình, ta sử dụng vòng lặp `for`, tính tổng các giá trị trong mảng `waiting` hay còn biết tới là tổng thời gian chờ của tất cả tiến trình.
+-  Cuối cùng là in ra thời gian chờ trung bình của các tiến trình bằng cách lấy tổng thời gian chờ chia cho số tiến trình.
+
+#### 3. Chạy chương trình
+
+Ta tổng hợp lại và có được chương trình như sau:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int size = 0;
+
+typedef struct {
+    char name[100];
+    int arrive;
+    int time;
+} Process;
+
+typedef struct {
+    Process *processes;
+    int size;
+} Queue;
+
+void SJF(Queue queue);
+
+int main() {
+    FILE *file = fopen("tientrinh.txt", "r");
+    Queue queue;
+    fscanf(file, "%d", &queue.size);
+    size = queue.size;
+    queue.processes = (Process *) malloc(queue.size * sizeof(Process));
+    for (int i = 0; i < queue.size; i++) {
+        Process process;
+        fscanf(file, "%s %d %d", process.name, &process.arrive, &process.time);
+        queue.processes[i] = process;
+    }
+    fclose(file);
+    SJF(queue);
+    return 0;
+}
+
+void SJF(Queue queue) {
+    int time = 0;
+    int total = 0;
+    int size = queue.size;
+    int index = 0;
+    int *waiting = (int *) malloc(queue.size * sizeof(int));
+    for (int i = 0; i < queue.size; i++) {
+        waiting[i] = 0;
+    }
+    while (queue.size > 0) {
+        int min = 0;
+        for (int i = 0; i < queue.size; i++) {
+            if (queue.processes[i].time < queue.processes[min].time) {
+                min = i;
+            }
+        }
+        for (int i = 0; i < queue.size; i++) {
+            if (queue.processes[i].time == queue.processes[min].time && queue.processes[i].arrive < queue.processes[min].arrive) {
+                min = i;
+            }
+        }
+        if (time < queue.processes[min].arrive) {
+            time = queue.processes[min].arrive;
+        }
+        printf("%s %d\n", queue.processes[min].name, time);
+        for (int i = min; i < queue.size - 1; i++) {
+            queue.processes[i] = queue.processes[i + 1];
+        }
+
+        time += queue.processes[min].time;
+        if (index == 0) {
+            waiting[index++] = 0;
+        } else {
+            waiting[index++] = time - queue.processes[min].time;
+        }
+        queue.size--;
+        queue.processes = (Process *) realloc(queue.processes, queue.size * sizeof(Process));
+    }
+    for (int i = 0; i < size; i++) {
+        total += waiting[i];
+    }
+    printf("Average waiting time: %f\n", (float) total / size);
+}
+```
