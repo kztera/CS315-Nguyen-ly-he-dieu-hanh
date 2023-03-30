@@ -9,6 +9,8 @@
 
 #define PORT 8080
 
+int num_clients = 0;
+
 void handle_client(int new_socket){
 	int valread;
 	char buffer[1024] = { 0 };
@@ -18,7 +20,7 @@ void handle_client(int new_socket){
 		int number1,number2,sum;
 
         sscanf(buffer,"%d %d",&number1,&number2);
-        sum=number1+number2;
+        sum =  number1+number2;
 
         char message[1024];
         sprintf(message,"%d",sum);
@@ -31,6 +33,8 @@ void handle_client(int new_socket){
 	}
 	
 	close(new_socket);
+	num_clients--;
+	printf("Client disconnected. Number of clients: %d\n", num_clients);
 	exit(0);
 }
 
@@ -44,8 +48,7 @@ int main(int argc,char const *argv[]){
 	exit(EXIT_FAILURE);
     }
 
-    if(setsockopt(server_fd,SOL_SOCKET,
-    SO_REUSEADDR|SO_REUSEPORT,&opt,sizeof(opt))){
+    if(setsockopt(server_fd,SOL_SOCKET,SO_REUSEADDR|SO_REUSEPORT,&opt,sizeof(opt))){
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
@@ -70,12 +73,15 @@ int main(int argc,char const *argv[]){
             exit(EXIT_FAILURE);
         }
         
+        num_clients++;
+        printf("New client connected. Number of clients: %d\n", num_clients);
+        
         pid_t pid=fork();
         if(pid==0){
-            close(server_fd);
+            close(server_fd); 
             handle_client(new_socket);
         }else{
-            close(new_socket);
+            close(new_socket); 
         }
     }
     return 0;

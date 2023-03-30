@@ -63,6 +63,24 @@ int main() {
         }
     }
 
+    printf("Ma tran A:\n");
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < K; j++) {
+            printf("%d ", A[i][j]);
+        }
+
+        printf("\n");
+    }
+
+    printf("Ma tran B:\n");
+    for (int i = 0; i < K; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", B[i][j]);
+        }
+
+        printf("\n");
+    }
+
     printf("Ma tran C:\n");
 
     for (int i = 0; i < M; i++) {
