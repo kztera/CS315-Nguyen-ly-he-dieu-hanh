@@ -1,10 +1,8 @@
 <h1>Nguyên lý hệ điều hành - Cuối kỳ </h1>
 
-![Profile views](https://gpvc.arturio.dev/kztera)
-
 <h2> Table of Contents </h2>
 
-- [Bài 1:](#bài-1)
+- [Bài 1: Lập trình đa luồng](#bài-1-lập-trình-đa-luồng)
   - [Code](#code)
   - [Chạy thử](#chạy-thử)
 - [Bài 2: Socket Programming](#bài-2-socket-programming)
@@ -39,14 +37,12 @@
   - [Điều này hoạt động như thế nào?](#điều-này-hoạt-động-như-thế-nào)
 - [Bài 3: Lập lịch tiến trình](#bài-3-lập-lịch-tiến-trình)
   - [Đề bài:](#đề-bài)
-  - [Bài làm: Thực hiện bằng code C trên Ubuntu](#bài-làm-thực-hiện-bằng-code-c-trên-ubuntu)
-    - [1. Thuật toán SJF có ưu tiên (Shortest Job First with Priority)](#1-thuật-toán-sjf-có-ưu-tiên-shortest-job-first-with-priority)
-    - [2. Cài đặt](#2-cài-đặt)
-    - [3. Giải thuật](#3-giải-thuật)
-    - [4. Code](#4-code)
-    - [3. Chạy chương trình](#3-chạy-chương-trình)
+  - [Bài làm:](#bài-làm)
+    - [1. Thuật toán SJF có ưu tiên](#1-thuật-toán-sjf-có-ưu-tiên)
+    - [2. Code](#2-code)
+- [3.3. Kết quả chạy chương trình](#33-kết-quả-chạy-chương-trình)
 
-## Bài 1:
+## Bài 1: Lập trình đa luồng
 
 Xét 2 ma trận A và B trong đó A là ma trận M hàng và K cột; và B là ma trận K hàng và N cột. Tích ma trận A và B là ma trận C có M hàng và N cột. Các phần tử của C được tính như sau:
 
@@ -654,6 +650,12 @@ Sau đó, chương trình sẽ đọc dữ liệu từ máy chủ bằng hàm `r
 
 #### 2.3. Tùy biến chương trình
 
+Như vậy, mỗi lần kết nối ta có các bước sau:
+1. Tạo và thiết lập địa chỉ socket
+2. Kết nối đến máy chủ   
+3. Đọc và gửi dữ liệu
+4. Đóng kết nối
+
 Chúng ta sẽ làm một số thay đổi nhỏ để tùy biến chương trình cho phù hợp. Ví dụ ở đây ta sẽ thiết lập server có khả năng nhận 2 số từ client và trả về kết quả phép tính cộng của 2 số đó.
 
 ##### 2.3.1. Chỉ kết nối với 1 client
@@ -876,6 +878,8 @@ Trong suốt cuộc trò chuyện, hai người có thể trao đổi thông tin
 
 Quá trình kết nối giữa server và client cũng tương tự như vậy. Server sẽ mở một socket để lắng nghe các yêu cầu kết nối từ client. Khi client muốn kết nối tới server, nó sẽ tạo một socket và yêu cầu kết nối tới socket của server. Khi server chấp nhận yêu cầu này, hai socket sẽ được kết nối với nhau và server và client có thể bắt đầu trao đổi dữ liệu qua lại.
 
+
+
 ## Bài 3: Lập lịch tiến trình
 
 ### Đề bài:
@@ -883,245 +887,435 @@ Quá trình kết nối giữa server và client cũng tương tự như vậy. 
 Cho dãy tiến trình p1, p2, ... pn trong file `tientrinh.txt` trong đó có dòng đầu tiên ghi số tiến trình, các dòng tiếp theo mỗi dòng ghi tên tiến trình và thời gian thực thi của tiến trình theo thứ tự đến của tiến trình trong hàng đợi.
 **Yêu cầu:** Sử dụng thuật toán SJF có ưu tiên đưa ra danh sách thứ tự thực hiện của các tiến trình và thời gian chờ trung bình (average waiting time) của các tiến trình.
 
-### Bài làm: Thực hiện bằng code C trên Ubuntu
+### Bài làm:
 
-#### 1. Thuật toán SJF có ưu tiên (Shortest Job First with Priority)
+#### 1. Thuật toán SJF có ưu tiên
 
-Trước hết, thuật toán này là một thuật toán lập lịch tiến trình (scheduling algorithm) được sử dụng để lập lịch các tiến trình trong hệ điều hành. Thuật toán này sẽ lựa chọn tiến trình có thời gian thực thi ngắn nhất để thực thi trước. Nếu có nhiều tiến trình có thời gian thực thi bằng nhau, thì tiến trình nào đến trước sẽ được thực thi trước.
+Trong Preemptive SJF Scheduling, các tiến trình được đưa vào hàng đợi sẵn sàng khi chúng đến. Tiến trình có thời gian thực thi ngắn nhất sẽ được thực thi. Nếu một tiến trình có thời gian thực thi ngắn hơn đến, tiến trình đang thực thi sẽ bị dừng lại hoặc bị tiến trình ngắn hơn thực thi.
 
-Như vậy, thuật toán SJF có ưu tiên sẽ lựa chọn tiến trình có thời gian thực thi ngắn nhất và đến trước để thực thi trước. Với đầu vào là một danh sách các tiến trình đang chờ thực thi, thuật toán sẽ lặp lại các bước sau:
+Giả sử ta có một danh sách các tiến trình như sau:
 
--  Tìm tiến trình có thời gian thực thi ngắn nhất và đến trước trong danh sách các tiến trình chưa được thực thi.
--  Thực thi tiến trình này.
--  Xóa tiến trình này khỏi danh sách các tiến trình chưa được thực thi và thêm tiến trình này vào danh sách các tiến trình đã được thực thi.
+| Tiến trình | Thời gian thực thi | Thời gian đến |
+| :--------: | :----------------: | :-----------: |
+|     P1     |         6          |       2       |
+|     P2     |         2          |       5       |
+|     P3     |         8          |       1       |
+|     P4     |         3          |     **0**     |
+|     P5     |         4          |       4       |
 
-Thuật toán SJF đã được chứng minh là sẽ cho ra thời gian chờ trung bình cho các tiến trình cần xử lý với một số con tối thiểu nhất. Bằng cách chuyển cách tiến trình ngắn hơn lên trước các tiến trình tốn thời gian dài, nó đã giảm một cách đáng kể thời gian chờ cho các tiến trình ngắn, kéo theo giảm rõ rệt thời gian chờ trung bình.
+Ta xét theo các thời điểm thực hiện các tiến trình:
 
-#### 2. Cài đặt
+1. **Tại thời điểm t = 0**, P4 đến và bắt đầu thực thi
 
-Trước hết, ta có file `tientrinh.txt` với nội dung như sau:
+![t = 0](/img/t=0.webp)
 
--  Dòng đầu ghi số tiến trình
--  Các dòng tiếp theo mỗi dòng ghi tên tiến trình và thời gian thực thi của tiến trình theo thứ tự đến của tiến trình trong hàng đợi.
+1. **Tại t = 1**, P3 đến nhưng P4 có thời gian thực thi ngắn hơn nên P3 vẫn đang chờ, P4 tiếp tục thực thi
 
-Thời gian thực hiện của mỗi tiến trình phụ thuộc vào nhiều yếu tố khác nhau như loại tiến trình, tài nguyên máy tính có sẵn và các yêu cầu xử lý khác. Thời gian thực hiện của một tiến trình thường được tính bằng đơn vị thời gian như giây hoặc mili-giây. Trong ví dụ này, ta sẽ giả sử thời gian thực hiện của mỗi tiến trình là một số nguyên.
+![t = 1](/img/t=1.webp)
 
-```txt
+2. **Tại t = 2**, P1 đến với thời gian thực thi = 6 > $t_{P4}$. P1 đợi
+
+![t = 2](/img/t=2.webp)
+
+3. **Tại t = 3**, P4 thực thi xong. Lúc này sẽ so sánh $t_{P3}$ và $t_{P1}$. Vì $t_{P1}$ $<$ $t_{P3}$ ($6 < 8$) nên P1 sẽ được thực thi
+
+![t = 3](/img/t=3.png)
+
+4. **Tại t = 4**, P5 đến, $t_{P5}$, $t_{P1}$, $t_{P3}$ được so sánh với nhau. Vì $t_{P5}$ bé nhất nên P5 sẽ được thực thi
+
+![t = 4](/img/t=4.png)
+
+| Tiến trình |  Thời gian thực thi  | Thời gian đến |
+| :--------: | :------------------: | :-----------: |
+|     P1     | 5 (vì đã thực thi 1) |       2       |
+|     P2     |          2           |       5       |
+|     P3     |          8           |       1       |
+|     P5     |          4           |     **4**     |
+
+5. **Tại t = 5**, P2 đến. $t_{P2}$, $t_{P5}$, $t_{P3}$ được so sánh với nhau. Vì $t_{P2}$ bé nhất nên P2 sẽ được thực thi. P5 dừng lại và quay lại hàng đợi
+
+![t = 5](/img/t=5.png)
+
+| Tiến trình |  Thời gian thực thi  | Thời gian đến |
+| :--------: | :------------------: | :-----------: |
+|     P1     | 5 (vì đã thực thi 1) |       2       |
+|     P2     |          2           |     **5**     |
+|     P3     |          8           |       1       |
+|     P5     |  3 (đã thực thi 1)   |       4       |
+
+6. **Tại t = 6**, P2 vẫn đang thực thi
+
+![t = 6](/img/t=6.webp)
+
+7. **Tại t = 7**, P2 thực thi xong. $t_{P3}$, $t_{P5}$ $t_{P1}$ được so sánh với nhau. P5 nhỏ nhất nên được thực thi
+
+![t = 7](/img/t=7.png)
+
+8. **Tại t = 10**, P5 hoàn thành thực thi. $t_{P3}$, $t_{P1}$ được so sánh với nhau. P1 có t bé hơn nên được thực thi
+
+![t = 10](/img/t=10.png)
+
+9. **Tại t = 15**, P1 hoàn thành thực thi. P3 là tiến trình duy nhất còn lại trong hàng đợi nên được thực thi
+
+![t = 15](/img/t=15.png)
+
+10. **Tại t = 23**, P3 hoàn thành thực thi
+
+![t = 23](/img/t=23.webp)
+
+11. Tính thời gian trung bình
+
+$t_{P4}$ = 0 - 0 = 0
+$t_{P1}$ = (3 - 2) + 6 = 7
+$t_{P5}$ = (4 - 4) + 2 = 2
+$t_{P2}$ = (5 - 5) = 0
+$t_{P3}$ = (15 - 1) = 14
+
+Thời gian chờ trung bình = $ \frac{0 + 7 + 2 + 0 + 14}{5} = 4.6 $
+
+#### 2. Code
+
+Như vậy, cứ mỗi lần có tiến trình tới, ta sẽ tìm tiến trình có thời gian thực thi nhỏ nhất và thực thi nó. Tiến trình đang thực thi sẽ được đưa vào hàng đợi. Cứ như vậy cho đến khi tất cả các tiến trình đều thực thi và không còn tiến trình nào trong hàng đợi. Mỗi tiến trình khi thực thi xong sẽ xóa khỏi danh sách đang thực thi và được đưa vào danh sách đã thực thi.
+
+Dựa vào những giải thích ở trên, ta xây dựng code C:
+
+Mọi thông tin về tiến trình sẽ được lấy ra từ file `tientrinh.txt`. Dòng đầu tiên là số tiến trình, các dòng tiếp theo là thông tin của các tiến trình. Mỗi dòng là thông tin của một tiến trình, gồm: id tiến , thời gian đến, thời gian thực thi.
+
+Ta có nội dung file `tientrinh.txt` như sau
+
+```text
 5
-p1 3
-p2 2
-p3 1
-p4 4
-p5 5
+P1 2 6
+P2 5 2
+P3 1 8
+P4 3 0
+P5 4 4
 ```
 
-#### 3. Giải thuật
+Khởi tạo biến thời gian hiện tại là 0. Ta sẽ tăng biến lên 1 mỗi khi chạy xong vòng lặp xử lí
 
-Chuyển file `tientrinh.txt` thành bảng như sau
+```c
+int time  = 0
+int total_waiting_time = 0;
+```
 
-| Tiến trình | Thời gian thực thi |
-| :--------: | :----------------: |
-|     p1     |         9          |
-|     p2     |         2          |
-|     p3     |         1          |
-|     p4     |         4          |
-|     p5     |         6          |
-
-Sử dụng thuật toán SJF ta sắp xếp lại thứ tự đến CPU như sau:
-
-$$CPU \leftarrow p3 \leftarrow p2 \leftarrow p4 \leftarrow p1 \leftarrow p5$$
-
-Bảng sau khi đã sắp xếp lại:
-
-| Tiến trình | Thời gian thực thi |
-| :--------: | :----------------: |
-|     p3     |         1          |
-|     p2     |         2          |
-|     p4     |         4          |
-|     p5     |         6          |
-|     p1     |         9          |
-
-Ta có bảng thời gian chờ của các tiến trình
-
-|        | p3  | p2  | p4  | p5  | p1  |
-| :----: | :-: | :-: | :-: | :-: | :-: |
-| **p3** |  -  |  1  |  1  |  1  |  1  |
-| **p2** |  -  |  -  |  2  |  2  |  2  |
-| **p4** |  -  |  -  |  -  |  4  |  4  |
-| **p5** |  -  |  -  |  -  |  -  |  6  |
-| **p1** |  -  |  -  |  -  |  -  |  -  |
-|Thời gian chờ|-|1|3|7|13|
-
-Thời gian chờ trung bình của các tiến trình là: $$\frac{1+3+7+13}{5} = 5.2$$
-
-#### 4. Code
-
-Để thực hiện bài toán, ta sẽ tạo một struct `Process` để lưu trữ thông tin của một tiến trình. Struct này có 3 trường: tên tiến trình, thời gian thực thi và thời gian đến của tiến trình.
+Tạo một struct để lưu thông tin của một tiến trình:
 
 ```c
 typedef struct {
-    char name[10];
-    int time;
-    int arrive;
+    int id;
+    int arrival_time;
+    int burst_time;
+    int remaining_time;
+    int waiting_time;
 } Process;
-```
 
-Tiếp theo, ta sẽ tạo một struct `Queue` để lưu trữ danh sách các tiến trình. Struct này có 2 trường: mảng các tiến trình và số tiến trình trong danh sách.
+Tạo một struct để lưu thông tin các tiến trình đọc từ file:
 
 ```c
 typedef struct {
+    int num;
     Process *processes;
-    int size;
-} Queue;
+} ProcessList;
 ```
 
-Để đọc dữ liệu từ file `tientrinh.txt` và lưu vào danh sách các tiến trình, ta sẽ viết hàm `readProcess` như sau:
+Tạo một struct để chuyển tiến trình vào đó khi `arrival_time` bằng `time`. Thời gian tiến trình ở trong struct này chính bằng thời gian chờ của tiến trình đó:
 
 ```c
-Queue readProcess(char *filename) {
+typedef struct {
+    int num;
+    Process *processes;
+} WaitingList;
+```
+
+Tạo một struct chứa các tiến trình đang thực thi:
+
+```c
+typedef struct {
+    int num;
+    Process *processes;
+} RunningList;
+```
+
+Tạo một struct chứa các tiến trình đã thực thi:
+
+```c
+typedef struct {
+    int num;
+    Process *processes;
+} FinishedList;
+```
+
+Đọc thông tin tiến trình từ file `tientrinh.txt`:
+
+```c
+void read_process_list(ProcessList *process_list, char *filename) {
     FILE *f = fopen(filename, "r");
-    Queue queue;
-    queue.size = 0;
-    queue.processes = (Process *) malloc(sizeof(Process));
-    int n;
-    fscanf(f, "%d", &n);
-    for (int i = 0; i < n; i++) {
-        Process p;
-        fscanf(f, "%s %d", p.name, &p.time);
-        p.arrive = i;
-        queue.processes[i] = p;
-        queue.size++;
-        queue.processes = (Process *) realloc(queue.processes, (queue.size + 1) * sizeof(Process));
+    fscanf(f, "%d", &process_list->num);
+    process_list->processes = (Process *) malloc(process_list->num * sizeof(Process));
+    for (int i = 0; i < process_list->num; i++) {
+        fscanf(f, "%s %d %d", process_list->processes[i].id, &process_list->processes[i].arrival_time, &process_list->processes[i].burst_time);
+        process_list->processes[i].remaining_time = process_list->processes[i].burst_time;
+        process_list->processes[i].waiting_time = 0;
     }
     fclose(f);
-    return queue;
 }
 ```
 
--  `queue.processes = (Process *) malloc(sizeof(Process));` là dòng khởi tạo mảng `queue.processes` với kích thước 1.
-
--  `queue.processes = (Process *) realloc(queue.processes, (queue.size + 1) * sizeof(Process));` là dòng cấp phát thêm bộ nhớ cho mảng `queue.processes` khi cần thiết.
-
-Ở đây, sử dụng vòng lặp `for` chạy duyệt qua các tiến trình trong file `tientrinh.txt` và lưu vào danh sách các tiến trình. Mỗi lần như thế, ta sẽ tạo một `Process` mới và lưu vào mảng `queue.processes`. Sau đó, ta sẽ tăng `queue.size` lên 1 và cấp phát thêm bộ nhớ cho mảng `queue.processes` với kích thước `queue.size + 1`.
-
-Dựa vào phần giải thuật cùng yêu cầu đề bài, ta xây dựng hàm `waitingTime` như sau:
+Sau khi đã có được danh sách các tiến trình, ta sẽ sắp xếp List đó theo thời gian đến:
 
 ```c
-void waitingTime(Queue queue) {
-    int time = 0;
-    int total = 0;
-    int *waiting = (int *) malloc(queue.size * sizeof(int));
-    for (int i = 0; i < queue.size; i++) {
-        waiting[i] = time - queue.processes[i].arrive;
-        time += queue.processes[i].time;
-        total += waiting[i];
-    }
-    printf("Thoi gian cho trung binh: %.2f\n", (float) total / queue.size);
-    printf("Thoi gian cho tung tien trinh:\n");
-    for (int i = 0; i < queue.size; i++) {
-        printf("%s: %d\n", queue.processes[i].name, waiting[i]);
+void sort_process_list(ProcessList *process_list) {
+    for (int i = 0; i < process_list->num - 1; i++) {
+        for (int j = i + 1; j < process_list->num; j++) {
+            if (process_list->processes[i].arrival_time > process_list->processes[j].arrival_time) {
+                Process temp = process_list->processes[i];
+                process_list->processes[i] = process_list->processes[j];
+                process_list->processes[j] = temp;
+            }
+        }
     }
 }
 ```
 
+Tạo một vòng lặp để xử lí các tiến trình, chỉ dừng lại khi `ProcessList` rỗng. Kết thúc vòng lặp sẽ tăng thời gian `time` lên 1 đơn vị.
 
+```c
+int time = 0;
 
--  Hàm được truyền vào là danh sách các tiến trình đã được thêm vào Queue. (Hàng đợi các tiến trình chưa được thực thi)
--  Biến `time` khởi tạo bằng 0, lưu trữ thời gian thực hiện của các tiến trình
--  Biến `total` khởi tạo bằng 0, lưu trữ tổng thời gian chờ của các tiến trình
--  Mảng `waiting` được cấp phát động với kích thước bằng với số tiến trình trong hàng đợi và dùng để lưu trữ thời gian chờ của từng tiến trình.
+while(process_list->num > 0) {
+    // Duyệt qua các tiến trình trong ProcessList xem có tiến trình nào có thời gian đến bằng thời gian hiện tại không
+    for (int i = 0; i < process_list->num; i++) {
+        if (process_list->processes[i].arrival_time == time) {
+            // Nếu RunninList rỗng, thì thực thi tiến trình đó
+            if (running_list->num == 0) {
+                // chuyển phần tử đầu tiên của ProcessList vào RunningList
+                running_list->processes[running_list->num] = process_list->processes[0];
+            } else {
+                // Nếu RunningList đang có tiến trình thực thi, chuyển tiến trình đó về WaitingList và tìm thời gian thực thi nhỏ nhất của các tiền trình trong WaitingList và chuyển tiến trình đó vào RunningList
+                if (running_list->processes[0].remaining_time > 0) {
+                    waiting_list->processes[waiting_list->num] = running_list->processes[0];
+                    waiting_list->num++;
+                }
+                // Khi đã chuyển tiến trình đang thực thi về WaitingList, sắp xếp lại WaitingList theo thời gian thực thi bé tới lớn nhưng không sử dụng hàm
+                int min = 0;
+                for (int j = 0; j < waiting_list->num; j++) {
+                    if (waiting_list->processes[j].remaining_time < waiting_list->processes[min].remaining_time) {
+                        min = j;
+                    }
+                }
+                Process temp = waiting_list->processes[0];
+                waiting_list->processes[0] = waiting_list->processes[min];
+                waiting_list->processes[min] = temp;
+                // Chuyển tiến trình đầu tiên của WaitingList vào RunningList
+                running_list->processes[0] = waiting_list->processes[0];
+                // Xóa tiến trình đầu tiên của WaitingList
+                for (int j = 0; j < waiting_list->num - 1; j++) {
+                    waiting_list->processes[j] = waiting_list->processes[j + 1];
+                }
+                waiting_list->num--;
+            }
+            // Xóa tiến trình đầu tiên của ProcessList
+            for (int j = 0; j < process_list->num - 1; j++) {
+                process_list->processes[j] = process_list->processes[j + 1];
+            }
+        }
+    }
+    // giảm remaining_time của tiến trình đang thực thi
+    running_list->processes[0].remaining_time--;
+    // đếm số tiến trình đang có trong WaitingList, thêm vào biến total_waiting_time
+    for (int i = 0; i < waiting_list->num; i++) {
+        waiting_list->processes[i].waiting_time++;
+        total_waiting_time++;
+    }
+    // Nếu remaining_time của tiến trình đang thực thi bằng 0, chuyển tiến trình đó vào FinishedList
+    if (running_list->processes[0].remaining_time == 0) {
+        finished_list->processes[finished_list->num] = running_list->processes[0];
+        finished_list->num++;
+    } 
+    // xóa tiến trình đang thực thi khỏi RunningList
+    running_list->num--;
+    // tăng thời gian lên 1 đơn vị
+    time++;
+}
+```
 
-Khi đã có danh sách các tiến trình, ta sẽ thực hiện thuật toán SJF có ưu tiên bằng cách sử dụng vòng lặp `While`. Và trong mỗi lần đó:
+Khi đã thực thi xong, ta sẽ tính toán thời gian chờ trung bình của các tiến trình:
 
--  Tìm ra chỉ số `min` của tiến trình có thời gian thực thi nhỏ nhất trong hàng đợi. (Vòng `for` đầu tiên)
--  Tiếp đó, nếu có nhiều tiến trình có thời gian thực thi nhỏ nhất, ta sẽ tìm ra tiến trình có thời gian đến nhỏ nhất tức là có giá trị `arrive` nhỏ nhất. (Vòng `for` thứ 2)
--  Khi đã có được chỉ số `min`, ta cập nhật giá trị biến `time` bằng cách cộng thời gian thực thi của tiến trình đó vào biến `time`.
--  Đồng thời, cập nhật giá trị của phần tử tương ứng trong mảng `waiting` bằng cách lấy thời gian thực thi của tiến trình đó trừ đi thời gian đến của tiến trình đó. Lúc này ta được thời gian chờ của tiến trình đó.
--  Tiếp đó, in ra tên tiến trình và thời gian thực thi của tiến trình đó và xóa tiến trình đó khỏi hàng đợi.
--  Khi đã duyệt hết hàng đợi, tức là đã thực thi hết các tiến trình, ta sử dụng vòng lặp `for`, tính tổng các giá trị trong mảng `waiting` hay còn biết tới là tổng thời gian chờ của tất cả tiến trình.
--  Cuối cùng là in ra thời gian chờ trung bình của các tiến trình bằng cách lấy tổng thời gian chờ chia cho số tiến trình.
+```c
+float average_waiting_time = (float) total_waiting_time / finished_list->num;
+```
 
-#### 3. Chạy chương trình
-
-Ta tổng hợp lại và có được chương trình như sau:
+Tổng hợp code:
 
 ```c
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-int size = 0;
 
 typedef struct {
-    char name[100];
-    int arrive;
-    int time;
+    char id[10];
+    int arrival_time;
+    int burst_time;
+    int remaining_time;
+    int waiting_time;
 } Process;
 
 typedef struct {
+    int num;
     Process *processes;
-    int size;
-} Queue;
+} ProcessList;
 
-void SJF(Queue queue);
+ProcessList *process_list;
+ProcessList *running_list;
+ProcessList *waiting_list;
+ProcessList *finished_list;
+int total_waiting_time = 0;
+float average_waiting_time = 0;
+int num_process = 0;
 
-int main() {
-    FILE *file = fopen("tientrinh.txt", "r");
-    Queue queue;
-    fscanf(file, "%d", &queue.size);
-    size = queue.size;
-    queue.processes = (Process *) malloc(queue.size * sizeof(Process));
-    for (int i = 0; i < queue.size; i++) {
-        Process process;
-        fscanf(file, "%s %d %d", process.name, &process.arrive, &process.time);
-        queue.processes[i] = process;
+void read_process_list(char *filename);
+void sort_process_list(ProcessList *process_list);
+void print_process_list(ProcessList *process_list);
+
+int main(int argc, char *argv[]) {
+    int time = 0;
+    // đọc danh sách các tiến trình từ file `tientrinh.txt`
+    read_process_list("tientrinh.txt");
+
+    // sắp xếp danh sách các tiến trình theo thời gian đến tăng dần
+    sort_process_list(process_list);
+
+    // khởi tạo các danh sách tiến trình
+    running_list = (ProcessList *) malloc(sizeof(ProcessList));
+    running_list->num = 0;
+    running_list->processes = (Process *) malloc(process_list->num * sizeof(Process));
+
+    waiting_list = (ProcessList *) malloc(sizeof(ProcessList));
+    waiting_list->num = 0;
+    waiting_list->processes = (Process *) malloc(process_list->num * sizeof(Process));
+
+    finished_list = (ProcessList *) malloc(sizeof(ProcessList));
+    finished_list->num = 0;
+    finished_list->processes = (Process *) malloc(process_list->num * sizeof(Process));
+
+    // thực thi các tiến trình
+    while(finished_list->num == num_process) {
+    // Duyệt qua các tiến trình trong ProcessList xem có tiến trình nào có thời gian đến bằng thời gian hiện tại không
+    for (int i = 0; i < process_list->num; i++) {
+        if (process_list->processes[i].arrival_time == time) {
+            // Nếu RunninList rỗng, thì thực thi tiến trình đó
+            if (running_list->num == 0) {
+                // chuyển phần tử đầu tiên của ProcessList vào RunningList
+                running_list->processes[running_list->num] = process_list->processes[0];
+            } else {
+                // Nếu RunningList đang có tiến trình thực thi, chuyển tiến trình đó về WaitingList và tìm thời gian thực thi nhỏ nhất của các tiền trình trong WaitingList và chuyển tiến trình đó vào RunningList
+                if (running_list->processes[0].remaining_time > 0) {
+                    waiting_list->processes[waiting_list->num] = running_list->processes[0];
+                    waiting_list->num++;
+                }
+                // Khi đã chuyển tiến trình đang thực thi về WaitingList, sắp xếp lại WaitingList theo thời gian thực thi bé tới lớn nhưng không sử dụng hàm
+                int min = 0;
+                for (int j = 0; j < waiting_list->num; j++) {
+                    if (waiting_list->processes[j].remaining_time < waiting_list->processes[min].remaining_time) {
+                        min = j;
+                    }
+                }
+                Process temp = waiting_list->processes[0];
+                waiting_list->processes[0] = waiting_list->processes[min];
+                waiting_list->processes[min] = temp;
+                // Chuyển tiến trình đầu tiên của WaitingList vào RunningList
+                running_list->processes[0] = waiting_list->processes[0];
+                // Xóa tiến trình đầu tiên của WaitingList
+                for (int j = 0; j < waiting_list->num - 1; j++) {
+                    waiting_list->processes[j] = waiting_list->processes[j + 1];
+                }
+                waiting_list->num--;
+            }
+            // Xóa tiến trình đầu tiên của ProcessList
+            for (int j = 0; j < process_list->num - 1; j++) {
+                process_list->processes[j] = process_list->processes[j + 1];
+            }
+        }
     }
-    fclose(file);
-    SJF(queue);
-    return 0;
+    // giảm remaining_time của tiến trình đang thực thi
+    running_list->processes[0].remaining_time--;
+    // đếm số tiến trình đang có trong WaitingList, thêm vào biến total_waiting_time
+    for (int i = 0; i < waiting_list->num; i++) {
+        waiting_list->processes[i].waiting_time++;
+        total_waiting_time++;
+    }
+    // Nếu remaining_time của tiến trình đang thực thi bằng 0, chuyển tiến trình đó vào FinishedList
+    if (running_list->processes[0].remaining_time == 0) {
+        finished_list->processes[finished_list->num] = running_list->processes[0];
+        finished_list->num++;
+    } 
+    // xóa tiến trình đang thực thi khỏi RunningList
+    running_list->num--;
+    // tăng thời gian lên 1 đơn vị
+    time++;
+    }
+    // tính average_waiting_time
+    average_waiting_time = (float) total_waiting_time / num_process;
+    // in ra các danh sách tiến trình
+    printf("Danh sach tien trinh:\n");
+    print_process_list(process_list);
 }
 
-void SJF(Queue queue) {
-    int time = 0;
-    int total = 0;
-    int size = queue.size;
-    int index = 0;
-    int *waiting = (int *) malloc(queue.size * sizeof(int));
-    for (int i = 0; i < queue.size; i++) {
-        waiting[i] = 0;
+void read_process_list(char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (f == NULL) {
+        printf("Cannot open file %s\n", filename);
+        exit(1);
     }
-    while (queue.size > 0) {
-        int min = 0;
-        for (int i = 0; i < queue.size; i++) {
-            if (queue.processes[i].time < queue.processes[min].time) {
-                min = i;
-            }
-        }
-        for (int i = 0; i < queue.size; i++) {
-            if (queue.processes[i].time == queue.processes[min].time && queue.processes[i].arrive < queue.processes[min].arrive) {
-                min = i;
-            }
-        }
-        if (time < queue.processes[min].arrive) {
-            time = queue.processes[min].arrive;
-        }
-        printf("%s %d\n", queue.processes[min].name, time);
-        for (int i = min; i < queue.size - 1; i++) {
-            queue.processes[i] = queue.processes[i + 1];
-        }
 
-        time += queue.processes[min].time;
-        if (index == 0) {
-            waiting[index++] = 0;
-        } else {
-            waiting[index++] = time - queue.processes[min].time;
+    // đọc số lượng tiến trình
+    int num;
+    fscanf(f, "%d", &num);
+    num_process = num;
+
+    // khởi tạo ProcessList
+    process_list = (ProcessList *) malloc(sizeof(ProcessList));
+    process_list->num = num;
+    process_list->processes = (Process *) malloc(num * sizeof(Process));
+
+    // đọc các tiến trình
+    for (int i = 0; i < num; i++) {
+        fscanf(f, "%s %d %d", process_list->processes[i].id, &process_list->processes[i].arrival_time, &process_list->processes[i].burst_time);
+        process_list->processes[i].remaining_time = process_list->processes[i].burst_time;
+        process_list->processes[i].waiting_time = 0;
+    }
+    fclose(f);
+}
+
+void sort_process_list(ProcessList *process_list) {
+    for (int i = 0; i < process_list->num - 1; i++) {
+        for (int j = i + 1; j < process_list->num; j++) {
+            if (process_list->processes[i].arrival_time > process_list->processes[j].arrival_time) {
+                Process temp = process_list->processes[i];
+                process_list->processes[i] = process_list->processes[j];
+                process_list->processes[j] = temp;
+            }
         }
-        queue.size--;
-        queue.processes = (Process *) realloc(queue.processes, queue.size * sizeof(Process));
     }
-    for (int i = 0; i < size; i++) {
-        total += waiting[i];
+}
+
+void print_process_list(ProcessList *process_list) {
+    printf("ID\tArrival Time\tBurst Time\tRemaining Time\tWaiting Time \n");
+    for (int i = 0; i < process_list->num; i++) {
+        printf("%s\t%d\t\t%d\t\t%d\t\t%d\n", process_list->processes[i].id, process_list->processes[i].arrival_time, process_list->processes[i].burst_time, process_list->processes[i].remaining_time, process_list->processes[i].waiting_time);
     }
-    printf("Average waiting time: %f\n", (float) total / size);
 }
 ```
+
+## 3.3. Kết quả chạy chương trình
+```
+Danh sach tien trinh hoan thanh:
+ID      Arrival Time    Burst Time      Remaining Time  Waiting Time 
+P4      3               0               0               0
+P2      5               2               2               0
+P5      4               4               4               2
+P1      2               6               6               7
+P3      1               8               8               14
+```
+
+*Referenced from: https://www.guru99.com/shortest-job-first-sjf-scheduling.html*
