@@ -13,17 +13,13 @@ int main(int argc, char const* argv[]) {
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = { 0 };
-  
+
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
-  
-    if (setsockopt(server_fd,
-                   SOL_SOCKET,
-                   SO_REUSEADDR | SO_REUSEPORT,
-                   &opt,
-                   sizeof(opt))) {
+
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
@@ -31,10 +27,8 @@ int main(int argc, char const* argv[]) {
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-  
-    if (bind(server_fd,
-             (struct sockaddr*)&address,
-             sizeof(address)) < 0) {
+
+    if (bind(server_fd,(struct sockaddr*)&address,sizeof(address)) < 0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
@@ -54,7 +48,7 @@ int main(int argc, char const* argv[]) {
 	int number1, number2;
 	sscanf(buffer,"%d %d", &number1,&number2);
 
-	int sum=number1+number2;
+	int sum = number1 + number2;
 
 	char message[1024];
 	sprintf(message,"%d",sum);
